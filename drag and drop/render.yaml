@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: midnight-manor-murder
+    runtime: ruby
+    plan: free
+    buildCommand: bundle install
+    startCommand: ruby server.rb
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
