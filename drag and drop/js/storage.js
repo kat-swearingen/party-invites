@@ -1,7 +1,7 @@
 /**
  * Storage & State Manager
- * Handles syncing with the local Ruby server / REST API when running,
- * or gracefully falling back to browser LocalStorage for static / standalone hosting.
+ * Powered by Google Firebase Realtime Database for permanent 24/7 cloud persistence.
+ * RSVPs and party customizations stay saved forever across all phones, tablets, and computers.
  */
 
 const PartyStorage = (function() {
@@ -12,117 +12,118 @@ const PartyStorage = (function() {
     PIN: "party_portal_admin_pin"
   };
 
-  const DEFAULT_PIN = "1920"; // 1920s theme pin!
+  const DEFAULT_PIN = "1920";
+  const FIREBASE_URL = "https://kat-party-default-rtdb.firebaseio.com";
 
-  let isServerAvailable = false;
+  let isServerAvailable = true;
 
-  // Check if API server is answering
+  // Check connectivity to cloud database
   async function checkServer() {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch('/api/health', { signal: controller.signal });
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(`${FIREBASE_URL}/.json?shallow=true`, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (res.ok) {
         isServerAvailable = true;
         return true;
       }
-    } catch (e) {
-      isServerAvailable = false;
-    }
+    } catch (e) {}
     return false;
   }
 
-  // Get active party configuration
+  // Get active party configuration (reads from Firebase Cloud)
   async function getParty() {
-    if (isServerAvailable) {
-      try {
-        const res = await fetch('/api/party');
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn('Failed to fetch from server, using local', e);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(`${FIREBASE_URL}/party.json`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object' && data.id) {
+          localStorage.setItem(STORAGE_KEYS.PARTY, JSON.stringify(data));
+          return data;
+        }
       }
-    }
+    } catch (e) {}
+
     const local = localStorage.getItem(STORAGE_KEYS.PARTY);
     if (local) {
-      try {
-        return JSON.parse(local);
-      } catch (e) {}
+      try { return JSON.parse(local); } catch (e) {}
     }
     return DEFAULT_PARTY;
   }
 
-  // Save party configuration
+  // Save party configuration (saves to Firebase Cloud)
   async function saveParty(partyData) {
     localStorage.setItem(STORAGE_KEYS.PARTY, JSON.stringify(partyData));
-    if (isServerAvailable) {
-      try {
-        await fetch('/api/party', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(partyData)
-        });
-      } catch (e) {
-        console.warn('Failed to save to server', e);
-      }
-    }
+    try {
+      await fetch(`${FIREBASE_URL}/party.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(partyData)
+      });
+    } catch (e) {}
     return partyData;
   }
 
-  // Get all RSVPs
+  // Get all RSVPs (reads from Firebase Cloud database)
   async function getRSVPs() {
-    if (isServerAvailable) {
-      try {
-        const res = await fetch('/api/rsvps');
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn('Failed to fetch RSVPs from server, using local', e);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(`${FIREBASE_URL}/rsvps.json`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        let list = [];
+        if (Array.isArray(data)) {
+          list = data.filter(Boolean);
+        } else if (data && typeof data === 'object') {
+          list = Object.values(data);
+        }
+        localStorage.setItem(STORAGE_KEYS.RSVPS, JSON.stringify(list));
+        return list;
       }
-    }
+    } catch (e) {}
+
     const local = localStorage.getItem(STORAGE_KEYS.RSVPS);
     if (local) {
-      try {
-        return JSON.parse(local);
-      } catch (e) {}
+      try { return JSON.parse(local); } catch (e) {}
     }
     return [];
   }
 
-  // Save all RSVPs
+  // Save all RSVPs (saves permanently to Firebase Cloud database)
   async function saveRSVPs(rsvps) {
-    localStorage.setItem(STORAGE_KEYS.RSVPS, JSON.stringify(rsvps));
-    if (isServerAvailable) {
-      try {
-        await fetch('/api/rsvps', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(rsvps)
-        });
-      } catch (e) {
-        console.warn('Failed to sync RSVPs to server', e);
-      }
-    }
-    return rsvps;
+    const list = Array.isArray(rsvps) ? rsvps : [];
+    localStorage.setItem(STORAGE_KEYS.RSVPS, JSON.stringify(list));
+    try {
+      await fetch(`${FIREBASE_URL}/rsvps.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(list)
+      });
+    } catch (e) {}
+    return list;
   }
 
   // Allocate next best available role
   function allocateRole(party, existingRsvps, guestName) {
     const roles = party.roles || DEFAULT_PARTY.roles;
     
-    // Find all role IDs already claimed by attending guests
     const claimedRoleIds = new Set(
       existingRsvps
         .filter(r => r.status === 'attending' && r.assignedRole)
         .map(r => r.assignedRole.id)
     );
 
-    // Filter available roles sorted by priority (1 is most essential: Detective, Murderer, Doctor, Accomplice...)
     const available = roles
       .filter(r => !claimedRoleIds.has(r.id))
       .sort((a, b) => (a.priority || 99) - (b.priority || 99));
 
     if (available.length === 0) {
-      // If all 16 roles are filled, assign an honorary Mystery Guest role
       return {
         id: "role_guest_" + Date.now(),
         name: "Lord / Lady of Mystery",
@@ -142,33 +143,26 @@ const PartyStorage = (function() {
       };
     }
 
-    // Pick from the top priority tier available, with slight randomized shuffle within the same priority tier
     const topPriority = available[0].priority;
     const topTierRoles = available.filter(r => r.priority === topPriority);
-    const chosenRole = topTierRoles[Math.floor(Math.random() * topTierRoles.length)];
-
-    return chosenRole;
+    return topTierRoles[Math.floor(Math.random() * topTierRoles.length)];
   }
 
-  // Submit or update RSVP
+  // Submit or update RSVP (saves directly to Firebase Cloud)
   async function submitRSVP(formData) {
     const rsvps = await getRSVPs();
     const party = await getParty();
 
-    // Check if this guest already exists (by name or existing id)
     const existingIndex = rsvps.findIndex(r => 
       (formData.id && r.id === formData.id) ||
       (r.name.trim().toLowerCase() === formData.name.trim().toLowerCase())
     );
 
     let assignedRole = null;
-
     if (formData.status === 'attending') {
       if (existingIndex >= 0 && rsvps[existingIndex].assignedRole && rsvps[existingIndex].status === 'attending') {
-        // Keep existing role if already assigned
         assignedRole = rsvps[existingIndex].assignedRole;
       } else {
-        // Assign new role
         assignedRole = allocateRole(party, rsvps, formData.name);
       }
     }
@@ -176,9 +170,7 @@ const PartyStorage = (function() {
     const rsvpRecord = {
       id: (existingIndex >= 0 ? rsvps[existingIndex].id : "rsvp_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5)),
       name: formData.name.trim(),
-      email: formData.email ? formData.email.trim() : "",
-      phone: formData.phone ? formData.phone.trim() : "",
-      status: formData.status, // 'attending' | 'declined'
+      status: formData.status,
       dietary: formData.dietary ? formData.dietary.trim() : "None",
       drinkPreference: formData.drinkPreference ? formData.drinkPreference.trim() : "Surprise me",
       plusOne: !!formData.plusOne,
@@ -194,14 +186,10 @@ const PartyStorage = (function() {
     }
 
     await saveRSVPs(rsvps);
-
-    // Save current guest session ID
     localStorage.setItem(STORAGE_KEYS.MY_RSVP, rsvpRecord.id);
-
     return rsvpRecord;
   }
 
-  // Get current user's RSVP if any
   async function getMyRSVP() {
     const myId = localStorage.getItem(STORAGE_KEYS.MY_RSVP);
     if (!myId) return null;
@@ -209,24 +197,20 @@ const PartyStorage = (function() {
     return rsvps.find(r => r.id === myId) || null;
   }
 
-  // Clear my stored RSVP (e.g. to RSVP as someone else or test)
   function clearMyRSVP() {
     localStorage.removeItem(STORAGE_KEYS.MY_RSVP);
   }
 
-  // Verify Host PIN
   function verifyPin(enteredPin) {
     const savedPin = localStorage.getItem(STORAGE_KEYS.PIN) || DEFAULT_PIN;
     return enteredPin === savedPin;
   }
 
-  // Set new Host PIN
   function setPin(newPin) {
     localStorage.setItem(STORAGE_KEYS.PIN, newPin);
     return true;
   }
 
-  // Reset to default sample RSVPs for demonstration
   async function seedDemoData() {
     const party = await getParty();
     const demoRsvps = [
@@ -237,7 +221,7 @@ const PartyStorage = (function() {
         dietary: "Vegetarian",
         drinkPreference: "Bringing a Bottle of Wine",
         plusOne: false,
-        assignedRole: party.roles[0], // Inspector Vance
+        assignedRole: party.roles[0],
         timestamp: new Date(Date.now() - 86400000 * 2).toISOString()
       },
       {
@@ -248,7 +232,7 @@ const PartyStorage = (function() {
         drinkPreference: "Themed Specialty Cocktail",
         plusOne: true,
         plusOneName: "Lord Sterling",
-        assignedRole: party.roles[1], // Countess Blackwood (The Murderer!)
+        assignedRole: party.roles[1],
         timestamp: new Date(Date.now() - 86400000 * 1.5).toISOString()
       },
       {
@@ -258,7 +242,7 @@ const PartyStorage = (function() {
         dietary: "None",
         drinkPreference: "BYOB (Bringing personal spirits/ale)",
         plusOne: false,
-        assignedRole: party.roles[2], // Dr. Finch (The Doctor)
+        assignedRole: party.roles[2],
         timestamp: new Date(Date.now() - 86400000 * 1).toISOString()
       },
       {
@@ -268,7 +252,7 @@ const PartyStorage = (function() {
         dietary: "Nut allergy",
         drinkPreference: "Themed Specialty Cocktail",
         plusOne: false,
-        assignedRole: party.roles[3], // Julian Cross (Accomplice)
+        assignedRole: party.roles[3],
         timestamp: new Date(Date.now() - 43200000).toISOString()
       }
     ];
@@ -276,7 +260,7 @@ const PartyStorage = (function() {
     return demoRsvps;
   }
 
-  // Clear all RSVPs
+  // Clear all RSVPs from Firebase Cloud database permanently
   async function clearAllRSVPs() {
     await saveRSVPs([]);
     localStorage.removeItem(STORAGE_KEYS.MY_RSVP);
