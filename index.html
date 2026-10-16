@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Monthly Society Calendar — Murder Mystery Dinner</title>
+  <meta name="description" content="A 12-month series of private parlour gatherings. RSVP to claim your classified role for this month's Murder Mystery Cocktail Party.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IM+Fell+English:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ==========================================================================
+       ✦ SELF-CONTAINED ROYAL BLUE & GOLD LOOKUP BUTTON & IDENTITY MODAL ✦
+       ========================================================================== */
+    .btn-blue-gold-lookup {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 1.3rem !important;
+      width: 100% !important;
+      max-width: 580px !important;
+      margin: 0.6rem auto 0 !important;
+      padding: 1.35rem 2.2rem !important;
+      background: linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%) !important;
+      border: 3px solid #f6c445 !important;
+      border-radius: 8px !important;
+      color: #fff9e6 !important;
+      font-family: 'Playfair Display', Georgia, serif !important;
+      font-size: 1.25rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.14em !important;
+      text-transform: uppercase !important;
+      cursor: pointer !important;
+      box-shadow: 0 10px 35px rgba(5, 20, 41, 0.95), 0 0 28px rgba(246, 196, 69, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      position: relative !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-blue-gold-lookup:hover {
+      transform: translateY(-3px) scale(1.02) !important;
+      background: linear-gradient(135deg, #0a254d 0%, #154c8e 50%, #0c2e5b 100%) !important;
+      border-color: #ffe066 !important;
+      color: #ffffff !important;
+      box-shadow: 0 14px 45px rgba(5, 20, 41, 0.98), 0 0 38px rgba(255, 224, 102, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .btn-blue-gold-lookup .btn-icon-pen,
+    .btn-blue-gold-lookup .btn-icon-knife {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #f6c445 !important;
+      transition: transform 0.25s ease, color 0.25s ease, filter 0.25s ease !important;
+      filter: drop-shadow(0 0 8px rgba(246, 196, 69, 0.8)) !important;
+      flex-shrink: 0 !important;
+    }
+
+    .btn-blue-gold-lookup:hover .btn-icon-pen {
+      transform: rotate(-15deg) scale(1.22) !important;
+      color: #ffe066 !important;
+    }
+
+    .btn-blue-gold-lookup:hover .btn-icon-knife {
+      transform: rotate(15deg) scale(1.22) !important;
+      color: #ffe066 !important;
+    }
+
+    .btn-blue-gold-lookup .btn-text {
+      flex: 1 !important;
+      text-align: center !important;
+      font-size: 1.18rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.14em !important;
+      color: #fff9e6 !important;
+    }
+
+    /* Modal Backdrop & Dialog */
+    .pin-modal-backdrop {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      backdrop-filter: blur(6px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 999999 !important;
+      padding: 1.5rem !important;
+      box-sizing: border-box !important;
+    }
+
+    .pin-box {
+      background: #1c1510 !important;
+      border: 2px solid var(--gold-dark, #8c6d1f) !important;
+      border-radius: 8px !important;
+      padding: 2.2rem 2rem !important;
+      max-width: 460px !important;
+      width: 100% !important;
+      text-align: center !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.98) !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .role-alert-box {
+      animation: pulseAlert 2.5s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35) !important; }
+      100% { box-shadow: 0 4px 34px rgba(239, 68, 68, 0.8) !important; }
+    }
+
+    .submission-summary-box {
+      transition: border-color 0.3s ease !important;
+    }
+
+    .submission-summary-box:hover {
+      border-color: var(--gold-accent, #e5b94c) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <div class="container">
+    <!-- Top Bar Controls -->
+    <header class="top-bar">
+      <div style="display: flex; gap: 0.8rem; align-items: center;">
+        <button class="back-to-calendar-btn" id="btn-nav-calendar" style="display: inline-flex;" onclick="window.toggleCalendarView && window.toggleCalendarView()">
+          <span>❧</span> 12-Month Calendar
+        </button>
+        <div class="theme-pill" id="theme-pill-text">Monthly Parlour Series</div>
+      </div>
+      <button class="sound-toggle-btn" id="sound-toggle-btn" title="Toggle Sound Effects">
+        <span id="sound-icon" style="font-size: 0.95rem; font-family: serif;">♪</span>
+        <span id="sound-label">Audio On</span>
+      </button>
+    </header>
+
+    <!-- ====================================================================
+         VIEW 1: 12-MONTH CALENDAR (OPTIONAL REGISTRY VIEW)
+         ==================================================================== -->
+    <section class="calendar-section" id="calendar-view" style="display: none;">
+      <div class="calendar-header">
+        <p class="calendar-eyebrow">The Annual Society Registry</p>
+        <h1 class="calendar-title">The Twelve Month Calendar</h1>
+        <p class="calendar-desc">
+          Twelve confidential gatherings sealed across the year. Unseal this month's summons below to enter the parlour.
+        </p>
+      </div>
+
+      <!-- 12 Envelopes Grid -->
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Generated by JS with the Navy Blue Active Envelope + 11 Grayed-out Envelopes -->
+      </div>
+
+      <!-- Back to Invitation Button -->
+      <div style="text-align: center; margin-top: 2rem;">
+        <button type="button" class="action-btn" onclick="window.openInvitationView && window.openInvitationView()" style="margin: 0 auto; display: inline-flex; gap: 0.6rem; align-items: center; padding: 0.85rem 1.8rem; background: #1c1510; border: 2px solid var(--gold-dark); color: var(--gold-glow); font-size: 1rem; cursor: pointer; border-radius: 4px;">
+          <span>⚜</span> Back to October Invitation
+        </button>
+      </div>
+
+      <!-- Quick Role Lookup on Calendar Landing -->
+      <div style="text-align: center; margin-top: 2.8rem; border-top: 2px dashed rgba(201, 158, 50, 0.45); padding-top: 2rem;">
+        <div style="font-family: var(--font-title); font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.9rem; font-weight: 700;">
+          ✦ Already Registered For This Gathering? ✦
+        </div>
+        <button 
+          type="button" 
+          class="btn-blue-gold-lookup" 
+          id="btn-lookup-role-cal"
+          onclick="window.openGuestLookupModal && window.openGuestLookupModal()"
+          style="display:inline-flex; align-items:center; justify-content:center; gap:1.3rem; width:100%; max-width:580px; margin:0 auto; padding:1.35rem 2.2rem; background:linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%); border:3px solid #f6c445; border-radius:8px; color:#fff9e6; font-family:'Playfair Display', Georgia, serif; font-size:1.25rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 35px rgba(5,20,41,0.95), 0 0 28px rgba(246,196,69,0.55); box-sizing:border-box;"
+        >
+          <!-- Pen Icon (Left) -->
+          <span class="btn-icon-pen" title="Fountain Pen" style="display:inline-flex; color:#f6c445;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </span>
+          <span class="btn-text" style="flex:1; text-align:center; font-size:1.18rem; font-weight:800; letter-spacing:0.14em; color:#fff9e6;">
+            See My Role & Clues
+          </span>
+          <!-- Knife Icon (Right) -->
+          <span class="btn-icon-knife" title="Murder Mystery Dagger" style="display:inline-flex; color:#f6c445;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+              <path d="m13 19 6-6"/>
+              <path d="m16 16 5 5"/>
+              <path d="m19 21 2-2"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         VIEW 2: ACTIVE PARTY INVITATION & DOSSIER REVEAL (DEFAULT VIEW)
+         ==================================================================== -->
+    <main id="invitation-view" style="display: block;">
+      <!-- Main Victorian Parchment Letter -->
+      <article class="invitation-frame">
+        <!-- Letterhead & Wax Seal Hero -->
+        <section class="envelope-hero">
+          <div class="victorian-letterhead">
+            <div class="letterhead-crest">❧ ⚜ ☙</div>
+            <div class="letterhead-caption">By Order of the Parlour • Confidential Summons</div>
+            <div class="letterhead-script">Upon the Twenty-Third of October</div>
+          </div>
+
+          <div class="wax-seal-wrapper" id="wax-seal-btn" title="Click to break the wax seal and open the letter">
+            <div class="wax-seal" id="wax-seal">
+              <div class="seal-crest">⚜</div>
+              <span class="wax-seal-inner">KS</span>
+            </div>
+            <div class="seal-prompt" id="seal-prompt">✦ Break Seal to Open Letter ✦</div>
+          </div>
+
+          <h1 class="invitation-title" id="party-title">Murder Mystery Dinner</h1>
+          <p class="invitation-tagline" id="party-tagline">A Parlour Gathering of Deceit, Secrets, and Sudden Demise</p>
+        </section>
+
+        <!-- Passed Savouries & Libations Banner -->
+        <div style="padding: 0 2.2rem;">
+          <div class="cocktail-appetizers-banner">
+            <div class="cocktail-appetizers-icon">❧</div>
+            <div class="cocktail-appetizers-text">
+              <h4>Passed Savouries & Specialty Libations</h4>
+              <p id="food-drink-note">
+                An abundant assortment of hot and cold passed appetizers and themed specialty cocktails will be provided. Guests are also warmly welcome to bring a bottle of wine or libations of their choosing (BYOB)!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Victorian Details Grid -->
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-icon">✦</span>
+            <div>
+              <div class="detail-label">The Gathering</div>
+              <div class="detail-value" id="party-datetime">Friday, Oct 23 • 8:00 PM</div>
+              <div class="detail-sub">Promptly at eight of the clock</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-icon">⚜</span>
+            <div>
+              <div class="detail-label">The Sanctuary</div>
+              <div class="detail-value" id="party-venue">Private Residence</div>
+              <div class="detail-sub" id="party-address">Address revealed upon RSVP</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-icon">✦</span>
+            <div>
+              <div class="detail-label">Parlour Attire</div>
+              <div class="detail-value" id="party-dresscode">Murder Mystery Upscale & Fun</div>
+              <div class="detail-sub">Dress in theme with your role</div>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-icon">❧</span>
+            <div>
+              <div class="detail-label">Libations & Fare</div>
+              <div class="detail-value">Savouries & Cocktails</div>
+              <div class="detail-sub">Themed drinks + BYOB / Wine welcome</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Story Teaser & Host Letter -->
+        <section class="story-section">
+          <p class="salutation-line">To Our Esteemed & Honoured Guest,</p>
+          <p class="story-lead" id="party-story">
+            <span class="victorian-dropcap">Y</span>ou are most cordially summoned to an intimate parlour gathering at the estate. With the storm raging across the moors and the carriage bridge washed out, an unsolved demise has cast a shadow across our halls. The conspirator is undeniably among our parlour companions. You have been summoned. Keep your friends close, your glass filled, and your secrets closer.
+          </p>
+
+          <div class="host-letter-box">
+            <div class="host-letter-header">
+              <span>❧</span> From the Desk of <span id="host-name">Your Enigmatic Host</span>
+            </div>
+            <div class="host-letter-body" id="host-note">
+              "Passed savouries and themed cocktails begin promptly at eight. If you wish to bring a favorite bottle of wine or BYOB, please feel most welcome! Mingle, observe your companions, and keep your guard up—for promptly at nine, the lights shall go out and one among us shall perish."
+            </div>
+          </div>
+        </section>
+
+        <!-- Schedule of Events -->
+        <section class="schedule-section">
+          <h3 class="section-heading"><span>✦</span> Order of the Evening</h3>
+          <div class="timeline" id="party-schedule">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+      </article>
+
+      <!-- RSVP Section: Victorian Calling Card -->
+      <section class="rsvp-card" id="rsvp-section">
+        <div class="rsvp-header">
+          <div style="font-size: 1.5rem; color: var(--crimson-wax); letter-spacing: 0.3em; margin-bottom: 0.2rem;">❧ ⚜ ☙</div>
+          <h2 class="rsvp-title">The Favour of a Reply</h2>
+          <p class="rsvp-subtitle">R.S.V.P. — Respond to receive your classified parlour role</p>
+        </div>
+
+        <form id="rsvp-form">
+          <!-- Status Toggle (Attending vs Regrets) -->
+          <div class="rsvp-status-toggle">
+            <div class="status-choice-btn selected-yes" id="btn-status-yes" data-status="attending">
+              <span class="status-title" style="color: var(--crimson-wax);">Accept with Pleasure</span>
+              <span class="status-sub">I shall attend and assume my secret parlour role</span>
+            </div>
+            <div class="status-choice-btn" id="btn-status-no" data-status="declined">
+              <span class="status-title">Decline with Regret</span>
+              <span class="status-sub">I cannot attend this month's gathering</span>
+            </div>
+          </div>
+
+          <input type="hidden" id="input-status" name="status" value="attending">
+
+          <!-- Form Fields -->
+          <div class="form-group">
+            <label class="form-label" for="guest-name">Your Honoured Name <span style="color: var(--crimson-wax);">*</span></label>
+            <input type="text" id="guest-name" class="form-input" placeholder="e.g., Katherine" required>
+          </div>
+
+          <!-- Dietary Requirements for Appetizers -->
+          <div class="form-group" id="group-dietary">
+            <label class="form-label">Dietary & Savoury Preferences (For Appetizer Preparation)</label>
+            <input type="text" id="guest-dietary" class="form-input" placeholder="Select chips below or note allergies...">
+            <div class="dietary-chips" id="dietary-chips">
+              <span class="diet-chip" data-diet="None">None</span>
+              <span class="diet-chip" data-diet="Vegetarian">Vegetarian</span>
+              <span class="diet-chip" data-diet="Vegan">Vegan</span>
+              <span class="diet-chip" data-diet="Gluten-Free">Gluten-Free</span>
+              <span class="diet-chip" data-diet="Nut Allergy">Nut Allergy</span>
+              <span class="diet-chip" data-diet="Dairy-Free">Dairy-Free</span>
+            </div>
+          </div>
+
+          <!-- Beverage Preference -->
+          <div class="form-group" id="group-drinks">
+            <label class="form-label" for="guest-drink">Refreshment of Choice</label>
+            <select id="guest-drink" class="form-select">
+              <option value="Themed Specialty Cocktail">Themed Specialty Cocktail</option>
+              <option value="Bringing a Bottle of Wine">Bringing a bottle of wine to share</option>
+              <option value="BYOB (Bringing my own favorite drink)">BYOB (Bringing personal spirits/ale)</option>
+              <option value="Classic Dry Gin Martini">Classic London Dry Gin & Botanicals</option>
+              <option value="Bourbon / Rye Old Fashioned">Aged Bourbon / Parlour Whiskey</option>
+              <option value="Artisanal Mocktail (Non-Alcoholic)">Temperate Botanical Mocktail (Non-Alcoholic)</option>
+            </select>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-rsvp-btn" id="submit-btn">
+            <span>✦</span>
+            <span>Accept Summons & Reveal Secret Role</span>
+          </button>
+
+          <!-- Already RSVP'd Lookup Button (Blue and Gold with Pen & Knife) -->
+          <div class="existing-guest-lookup" style="margin-top: 2.4rem; border-top: 2px dashed rgba(201, 158, 50, 0.45); padding-top: 1.8rem; text-align: center;">
+            <div style="font-family: var(--font-title); font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.9rem; font-weight: 700;">
+              ✦ Already RSVP'd? Check Your Persona & Clues ✦
+            </div>
+            <button 
+              type="button" 
+              class="btn-blue-gold-lookup" 
+              id="btn-lookup-role"
+              onclick="window.openGuestLookupModal && window.openGuestLookupModal()"
+              style="display:inline-flex; align-items:center; justify-content:center; gap:1.3rem; width:100%; max-width:580px; margin:0 auto; padding:1.35rem 2.2rem; background:linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%); border:3px solid #f6c445; border-radius:8px; color:#fff9e6; font-family:'Playfair Display', Georgia, serif; font-size:1.25rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 35px rgba(5,20,41,0.95), 0 0 28px rgba(246,196,69,0.55); box-sizing:border-box;"
+            >
+              <!-- Pen Icon (Left) -->
+              <span class="btn-icon-pen" title="Fountain Pen" style="display:inline-flex; color:#f6c445;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                  <path d="M2 2l7.586 7.586"/>
+                  <circle cx="11" cy="11" r="2"/>
+                </svg>
+              </span>
+              <span class="btn-text" style="flex:1; text-align:center; font-size:1.18rem; font-weight:800; letter-spacing:0.14em; color:#fff9e6;">
+                See My Role & Clues
+              </span>
+              <!-- Knife Icon (Right) -->
+              <span class="btn-icon-knife" title="Murder Mystery Dagger" style="display:inline-flex; color:#f6c445;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+                  <path d="m13 19 6-6"/>
+                  <path d="m16 16 5 5"/>
+                  <path d="m19 21 2-2"/>
+                </svg>
+              </span>
+            </button>
+            <div style="font-family: var(--font-letter); font-size: 1.1rem; font-style: italic; color: #ded6c9; margin-top: 0.8rem;">
+              Enter your registered name to review your secret character persona and submitted preferences
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Classified Dossier Reveal Section (Hidden until RSVP'd) -->
+      <section class="dossier-wrapper" id="dossier-section" style="display: none;">
+        <div class="dossier-folder" id="dossier-card">
+          <div class="dossier-tab-header">
+            <div class="classified-stamp">CONFIDENTIAL • PARLOUR DISPATCH</div>
+            <div class="dossier-id-label" id="dossier-ref-code">PARLOUR FILE: #MM-1888</div>
+          </div>
+
+          <div class="dossier-body">
+            <!-- Role Changed Warning Notice (Triggered if host reallocated their character) -->
+            <div id="dossier-role-changed-alert" class="role-alert-box" style="display: none; background: linear-gradient(135deg, #781d22 0%, #450a0a 100%); border: 2px solid #ef4444; border-radius: 4px; padding: 1.2rem 1.4rem; margin-bottom: 1.8rem; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);">
+              <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.4rem;">
+                <span style="font-size: 1.8rem;">⚠️</span>
+                <div>
+                  <h3 style="font-family: var(--font-title); font-size: 1.15rem; color: #fff; margin: 0; letter-spacing: 0.08em; text-transform: uppercase;">
+                    Notice From The Manor: Your Secret Persona Has Changed!
+                  </h3>
+                  <div style="font-size: 0.9rem; color: #fca5a5; margin-top: 0.2rem;">
+                    The Host has reallocated your character role for the party. Please examine your new persona, secret mission, and 3 clues below!
+                  </div>
+                </div>
+              </div>
+              <button type="button" id="btn-ack-role-change" class="action-btn" style="margin-top: 0.8rem; padding: 0.45rem 1rem; font-size: 0.8rem; border-color: #f87171; color: #fff; background: rgba(0,0,0,0.4);">
+                <span>✓</span> I Acknowledge My New Role
+              </button>
+            </div>
+
+            <!-- What I Submitted Summary Box -->
+            <div id="dossier-submission-summary" class="submission-summary-box" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(201, 158, 50, 0.35); border-radius: 4px; padding: 1.1rem 1.4rem; margin-bottom: 1.8rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+              <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center;">
+                <div>
+                  <div style="font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-glow);">Guest On File</div>
+                  <div id="summary-guest-name" style="font-size: 1.1rem; color: #fff; font-weight: 600;">—</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-glow);">Dietary Requirements</div>
+                  <div id="summary-guest-dietary" style="font-size: 1rem; color: #ded6c9;">—</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-glow);">Cocktail Preference</div>
+                  <div id="summary-guest-drink" style="font-size: 1rem; color: #ded6c9;">—</div>
+                </div>
+              </div>
+              <button type="button" id="btn-edit-preferences" class="action-btn" style="padding: 0.45rem 0.9rem; font-size: 0.78rem; border-color: var(--gold-accent); color: var(--gold-glow);">
+                <span>❧</span> Edit Preferences
+              </button>
+            </div>
+
+            <!-- Character Header -->
+            <div class="character-headline">
+              <div class="character-avatar-icon" id="dossier-symbol">⚜</div>
+              <div class="character-titles">
+                <div class="character-archetype" id="dossier-archetype">The Physician</div>
+                <h2 class="character-name" id="dossier-character-name">The Doctor</h2>
+                <div class="guest-real-name-tag">Assigned to: <strong id="dossier-guest-name">Guest Name</strong></div>
+                <div class="alignment-badge badge-protector" id="dossier-badge">Town (Protector)</div>
+              </div>
+            </div>
+
+            <!-- Public Identity -->
+            <div class="dossier-card-block">
+              <h4><span>⚜</span> Public Persona (What you reveal in polite parlour conversation)</h4>
+              <p id="dossier-bio">
+                The physician who knows dark medical secrets. You carry an eye for detail, rare botanicals, and unusual antidotes.
+              </p>
+            </div>
+
+            <!-- Secret Objective with Privacy Shield -->
+            <div class="secret-objective-box blurred" id="secret-objective-box">
+              <div class="secret-reveal-overlay" id="secret-reveal-overlay" title="Click to reveal or hide your private mission">
+                <button type="button" class="secret-reveal-btn">
+                  <span>✦</span> Click to Reveal Secret Parlour Objective
+                </button>
+                <div class="privacy-notice">Keep concealed from curious eyes seated nearby!</div>
+              </div>
+              <h4><span>❧</span> Top Secret Mission (Do NOT reveal this to anyone!)</h4>
+              <p class="secret-content" id="dossier-objective">
+                Protect innocence. You carry an antidote. When the murder occurs, loudly examine the body and cast doubt on exotic poisons.
+              </p>
+            </div>
+
+            <!-- 3 Confidential Intel Cards (Clue & Mafia Hybrid) -->
+            <div class="intel-cards-container">
+              <div class="intel-section-title">
+                <span>❧</span>
+                <span>Your Three Secret Clues (Known Before the Gathering)</span>
+                <span>☙</span>
+              </div>
+              <p class="intel-section-desc">
+                Three pieces of classified intel assigned only to you. Share them wisely to deduce the truth—or to conceal your crimes!
+              </p>
+              <div class="intel-grid" id="dossier-intel-grid">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+
+            <!-- Costume & Prop Suggestions -->
+            <div class="dossier-card-block">
+              <h4><span>✦</span> Suggested Attire & Victorian Props</h4>
+              <p id="dossier-costume">
+                Velvet jacket, pocket watch, vintage satchel, or antique apothecary vial.
+              </p>
+            </div>
+
+            <!-- Door Passcode -->
+            <div class="passcode-strip">
+              <div>
+                <div class="detail-label">Secret Parlour Passphrase</div>
+                <div class="passcode-text" id="dossier-passcode">WHISPER_AT_DOOR: 'First, do no harm.'</div>
+              </div>
+              <span style="font-size: 1.5rem; color: var(--gold-accent);">⚜</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="dossier-actions">
+              <button class="action-btn" id="btn-add-calendar">
+                <span>✦</span> Add to Calendar (.ics)
+              </button>
+              <button class="action-btn" id="btn-print-dossier">
+                <span>✦</span> Print / Save Role Card
+              </button>
+              <button class="action-btn" id="btn-edit-rsvp">
+                <span>❧</span> Edit My Response
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Portal Footer -->
+    <footer class="portal-footer">
+      <p>Curated for our monthly parlour society. All rights reserved.</p>
+      <div>
+        <a href="admin.html" class="host-login-link">
+          <span>⚜</span> Host Command Center
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Guest Identity Verification Modal (Check My Role) -->
+  <div class="pin-modal-backdrop" id="lookup-modal" style="display: none;">
+    <div class="pin-box">
+      <div style="font-size: 2.2rem; color: var(--gold-accent); margin-bottom: 0.6rem;">⚜</div>
+      <h2 style="font-family: var(--font-title); color: #fff; margin-bottom: 0.4rem; font-size: 1.45rem; letter-spacing: 0.05em;">
+        Check Your Secret Role
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.4rem; line-height: 1.5;">
+        Enter the exact name you used when submitting your RSVP to unlock your classified persona, intel, and submission details.
+      </p>
+      <form id="lookup-form">
+        <input 
+          type="text" 
+          id="lookup-name-input" 
+          class="form-input" 
+          style="text-align: center; font-size: 1.15rem; margin-bottom: 1rem; width: 100%; border-color: var(--gold-dark);" 
+          placeholder="Enter your registered name..." 
+          autocomplete="name" 
+          required
+        >
+        <div id="lookup-error-msg" style="display: none; color: #fca5a5; font-size: 0.9rem; margin-bottom: 1.1rem; background: rgba(120, 29, 34, 0.45); padding: 0.7rem 0.9rem; border: 1px solid #ef4444; border-radius: 4px; line-height: 1.4; text-align: left;">
+          <!-- Injected via JS -->
+        </div>
+        <div style="display: flex; gap: 0.8rem; justify-content: center; align-items: center;">
+          <button type="button" id="btn-close-lookup" class="action-btn" style="padding: 0.75rem 1.2rem; background: rgba(0,0,0,0.5); border-color: #5c4738; color: #a89f91; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" id="btn-submit-lookup" class="submit-rsvp-btn" style="margin-top: 0; padding: 0.75rem 1.4rem; font-size: 0.95rem; width: auto; flex: 1; cursor: pointer;">
+            <span>⚜</span> Reveal My Dossier
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- ==========================================================================
+       ✦ SELF-CONTAINED GUEST IDENTITY & ROLE VERIFICATION ENGINE ✦
+       ========================================================================== -->
+  <script>
+    (function() {
+      const FIREBASE_URL = "https://kat-party-default-rtdb.firebaseio.com";
+
+      window.openGuestLookupModal = function() {
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
+          SoundEngine.playTypewriter();
+        }
+        const modal = document.getElementById('lookup-modal');
+        const input = document.getElementById('lookup-name-input');
+        const err = document.getElementById('lookup-error-msg');
+        if (modal) modal.style.display = 'flex';
+        if (err) { err.style.display = 'none'; err.textContent = ''; }
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 100);
+        }
+      };
+
+      window.closeGuestLookupModal = function() {
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
+          SoundEngine.playTypewriter();
+        }
+      window.openInvitationView = function() {
+        const calView = document.getElementById('calendar-view');
+        const invView = document.getElementById('invitation-view');
+        const backBtn = document.getElementById('btn-nav-calendar');
+        if (calView) calView.style.display = 'none';
+        if (invView) invView.style.display = 'block';
+        if (backBtn) {
+          backBtn.style.display = 'inline-flex';
+          backBtn.innerHTML = '<span>❧</span> 12-Month Calendar';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      window.showCalendarView = function() {
+        const calView = document.getElementById('calendar-view');
+        const invView = document.getElementById('invitation-view');
+        const backBtn = document.getElementById('btn-nav-calendar');
+        if (invView) invView.style.display = 'none';
+        if (calView) calView.style.display = 'block';
+        if (backBtn) {
+          backBtn.style.display = 'inline-flex';
+          backBtn.innerHTML = '<span>⚜</span> Back to Invitation';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      window.toggleCalendarView = function() {
+        const calView = document.getElementById('calendar-view');
+        if (calView && calView.style.display !== 'none') {
+          window.openInvitationView();
+        } else {
+          window.showCalendarView();
+        }
+      };
+
+      // Ensure click handlers are active
+      function initLookupEngine() {
+        const modal = document.getElementById('lookup-modal');
+        const closeBtn = document.getElementById('btn-close-lookup');
+        const form = document.getElementById('lookup-form');
+        const input = document.getElementById('lookup-name-input');
+        const err = document.getElementById('lookup-error-msg');
+
+        if (closeBtn) closeBtn.onclick = window.closeGuestLookupModal;
+
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) window.closeGuestLookupModal();
+          });
+        }
+
+        const btn1 = document.getElementById('btn-lookup-role');
+        const btn2 = document.getElementById('btn-lookup-role-cal');
+        if (btn1) btn1.onclick = window.openGuestLookupModal;
+        if (btn2) btn2.onclick = window.openGuestLookupModal;
+
+        if (form) {
+          form.onsubmit = async (e) => {
+            e.preventDefault();
+            const query = input ? input.value.trim() : '';
+            if (!query) return;
+
+            const submitBtn = document.getElementById('btn-submit-lookup');
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = '0.7';
+            }
+
+            try {
+              let rsvps = [];
+              try {
+                const res = await fetch(`${FIREBASE_URL}/rsvps.json`);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data) {
+                    rsvps = Array.isArray(data) ? data : Object.values(data);
+                  }
+                }
+              } catch (fe) {
+                console.warn('Firebase query notice, checking local storage', fe);
+                const local = localStorage.getItem('parlour_rsvps');
+                if (local) rsvps = JSON.parse(local);
+              }
+
+              const clean = query.toLowerCase();
+              const guest = rsvps.find(r => r && r.name && r.name.trim().toLowerCase() === clean);
+
+              if (!guest) {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `No invitation on file found under "${query}". Please check the spelling, or submit your RSVP in the form above!`;
+                  err.style.display = 'block';
+                }
+                return;
+              }
+
+              if (guest.status === 'declined') {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `Your RSVP on file was recorded as "Declined (Regrets)". If your plans have changed, please submit an attending RSVP above to claim a secret role!`;
+                  err.style.display = 'block';
+                }
+                return;
+              }
+
+              if (guest.status === 'attending' && guest.assignedRole) {
+                // Success! Close modal and reveal dossier
+                window.closeGuestLookupModal();
+
+                // Show invitation view if on calendar view
+                const calView = document.getElementById('calendar-view');
+                const invView = document.getElementById('invitation-view');
+                const backBtn = document.getElementById('btn-nav-calendar');
+                if (calView) calView.style.display = 'none';
+                if (invView) invView.style.display = 'block';
+                if (backBtn) backBtn.style.display = 'inline-flex';
+
+                localStorage.setItem('parlour_my_rsvp', guest.id);
+                const seal = document.getElementById('wax-seal');
+                if (seal) seal.classList.add('broken');
+                const prompt = document.getElementById('seal-prompt');
+                if (prompt) prompt.textContent = '✦ Welcome Back ✦';
+
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playMysteryChime) {
+                  SoundEngine.playMysteryChime();
+                }
+
+                // Render Dossier directly
+                displayDossier(guest, rsvps);
+              } else {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `An RSVP for "${guest.name}" was found, but no character role has been assigned yet. Please submit your RSVP above to receive your role!`;
+                  err.style.display = 'block';
+                }
+              }
+            } catch (error) {
+              console.error(error);
+              if (err) {
+                err.textContent = 'A connection error occurred while querying the parlour archives. Please try again.';
+                err.style.display = 'block';
+              }
+            } finally {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+              }
+            }
+          };
+        }
+      }
+
+      function displayDossier(rsvp, allRsvps) {
+        const role = rsvp.assignedRole;
+        if (!role) return;
+
+        const dossierSection = document.getElementById('dossier-section');
+        if (dossierSection) dossierSection.style.display = 'block';
+
+        const refCode = document.getElementById('dossier-ref-code');
+        const sym = document.getElementById('dossier-symbol');
+        const arch = document.getElementById('dossier-archetype');
+        const charName = document.getElementById('dossier-character-name');
+        const guestName = document.getElementById('dossier-guest-name');
+        const badge = document.getElementById('dossier-badge');
+        const bio = document.getElementById('dossier-bio');
+        const obj = document.getElementById('dossier-objective');
+        const costume = document.getElementById('dossier-costume');
+        const passcode = document.getElementById('dossier-passcode');
+
+        if (refCode) refCode.textContent = `PARLOUR FILE: #${(role.id || 'MM').toUpperCase()}`;
+        if (sym) sym.textContent = role.symbol || '✦';
+        if (arch) arch.textContent = role.archetype || 'Special Guest';
+        if (charName) charName.textContent = role.roleTitle || role.name;
+        if (guestName) guestName.textContent = rsvp.name;
+        if (badge) {
+          badge.textContent = role.alignment || 'Town';
+          badge.className = `alignment-badge ${role.badgeClass || 'badge-guest'}`;
+        }
+        if (bio) bio.textContent = role.bio;
+        if (obj) obj.textContent = role.secretObjective;
+        if (costume) costume.textContent = role.costumeGuide;
+        if (passcode) passcode.textContent = role.doorPasscode || "WHISPER AT DOOR: 'The shadows lengthen.'";
+
+        // What I Submitted Summary
+        const sName = document.getElementById('summary-guest-name');
+        const sDiet = document.getElementById('summary-guest-dietary');
+        const sDrink = document.getElementById('summary-guest-drink');
+        if (sName) sName.textContent = rsvp.name;
+        if (sDiet) sDiet.textContent = rsvp.dietary || 'None';
+        if (sDrink) sDrink.textContent = rsvp.drinkPreference || 'Surprise Me';
+
+        // Edit Preferences button
+        const editPrefBtn = document.getElementById('btn-edit-preferences');
+        if (editPrefBtn) {
+          editPrefBtn.onclick = () => {
+            const nInput = document.getElementById('guest-name');
+            const dInput = document.getElementById('guest-dietary');
+            const drInput = document.getElementById('guest-drink');
+            const btnYes = document.getElementById('btn-status-yes');
+            if (nInput) nInput.value = rsvp.name || '';
+            if (dInput) dInput.value = (rsvp.dietary && rsvp.dietary !== 'None') ? rsvp.dietary : '';
+            if (drInput) drInput.value = rsvp.drinkPreference || 'Themed Specialty Cocktail';
+            if (btnYes) btnYes.click();
+            const rsvpSec = document.getElementById('rsvp-section');
+            if (rsvpSec) rsvpSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          };
+        }
+
+        // Role Changed Alert Notice
+        const alertBox = document.getElementById('dossier-role-changed-alert');
+        const ackBtn = document.getElementById('btn-ack-role-change');
+        if (alertBox) {
+          if (rsvp.roleChanged) {
+            alertBox.style.display = 'block';
+            if (ackBtn) {
+              ackBtn.onclick = async () => {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                rsvp.roleChanged = false;
+                alertBox.style.display = 'none';
+                try {
+                  const targetIdx = allRsvps.findIndex(r => r && r.id === rsvp.id);
+                  if (targetIdx >= 0) {
+                    allRsvps[targetIdx].roleChanged = false;
+                    await fetch(`${FIREBASE_URL}/rsvps.json`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(allRsvps)
+                    });
+                  }
+                } catch (e) {
+                  console.warn('Error clearing roleChanged in Firebase', e);
+                }
+              };
+            }
+          } else {
+            alertBox.style.display = 'none';
+          }
+        }
+
+        // Populate 3 Clue Cards
+        const intelGrid = document.getElementById('dossier-intel-grid');
+        if (intelGrid && role.clueCards && role.clueCards.length > 0) {
+          intelGrid.innerHTML = role.clueCards.map((card, idx) => `
+            <div class="intel-card">
+              <div class="intel-card-badge">CLUE #${idx + 1}</div>
+              <div class="intel-card-label">${card.label}</div>
+              <div class="intel-card-text">${card.text}</div>
+            </div>
+          `).join('');
+        }
+
+        // Privacy shield
+        const secretBox = document.getElementById('secret-objective-box');
+        const secretOverlay = document.getElementById('secret-reveal-overlay');
+        if (secretBox) secretBox.classList.add('blurred');
+        if (secretOverlay) secretOverlay.style.display = 'flex';
+
+        setTimeout(() => {
+          if (dossierSection) dossierSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLookupEngine);
+      } else {
+        initLookupEngine();
+      }
+    })();
+  </script>
+</body>
+</html>
