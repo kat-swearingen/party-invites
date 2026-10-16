@@ -420,9 +420,14 @@
       <!-- Classified Dossier Reveal Section (Hidden until RSVP'd) -->
       <section class="dossier-wrapper" id="dossier-section" style="display: none;">
         <div class="dossier-folder" id="dossier-card">
-          <div class="dossier-tab-header">
-            <div class="classified-stamp">CONFIDENTIAL • PARLOUR DISPATCH</div>
-            <div class="dossier-id-label" id="dossier-ref-code">PARLOUR FILE: #MM-1888</div>
+          <div class="dossier-tab-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+            <div>
+              <div class="classified-stamp">CONFIDENTIAL • PARLOUR DISPATCH</div>
+              <div class="dossier-id-label" id="dossier-ref-code">PARLOUR FILE: #MM-1888</div>
+            </div>
+            <button type="button" class="action-btn btn-conceal-dossier" onclick="window.concealDossier && window.concealDossier()" style="padding: 0.5rem 1.1rem; font-size: 0.84rem; border-color: var(--gold-accent); color: var(--gold-glow); background: rgba(0,0,0,0.6); cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 4px;">
+              <span>❧</span> Conceal Role & View Full Invitation
+            </button>
           </div>
 
           <div class="dossier-body">
@@ -541,6 +546,9 @@
               <button class="action-btn" id="btn-edit-rsvp">
                 <span>❧</span> Edit My Response
               </button>
+              <button type="button" class="action-btn" id="btn-conceal-dossier-bottom" onclick="window.concealDossier && window.concealDossier()" style="border-color: var(--gold-accent); color: var(--gold-glow); background: rgba(0,0,0,0.6); cursor: pointer;">
+                <span>❧</span> Conceal Role & View Full Invitation
+              </button>
             </div>
           </div>
         </div>
@@ -625,6 +633,19 @@
         if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
           SoundEngine.playTypewriter();
         }
+        const modal = document.getElementById('lookup-modal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      window.concealDossier = function() {
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
+          SoundEngine.playTypewriter();
+        }
+        const dossier = document.getElementById('dossier-section');
+        if (dossier) dossier.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
       window.openInvitationView = function() {
         const calView = document.getElementById('calendar-view');
         const invView = document.getElementById('invitation-view');
