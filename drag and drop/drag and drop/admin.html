@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host Command Center — Party Portal</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Admin specific styles */
+    .admin-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1.2rem;
+    }
+    .admin-nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .stat-card.highlight {
+      border-color: var(--gold-dark);
+      background: radial-gradient(circle at 80% 20%, #201a15 0%, #141210 100%);
+    }
+    .stat-value {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .stat-label {
+      font-family: var(--font-title);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-glow);
+    }
+    /* Table styles */
+    .table-container {
+      overflow-x: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      margin-bottom: 2.5rem;
+    }
+    .guest-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .guest-table th {
+      background: rgba(30, 24, 20, 0.8);
+      font-family: var(--font-title);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-glow);
+      padding: 1rem;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+    .guest-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(45, 38, 30, 0.6);
+      font-size: 1rem;
+    }
+    .guest-table tr:hover td {
+      background: rgba(45, 38, 30, 0.3);
+    }
+    .role-badge-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .diet-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--gold-dark);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--gold-glow);
+    }
+    /* Role Matrix & Balancer */
+    .role-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .role-matrix-card {
+      background: rgba(20, 18, 16, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: all 0.25s ease;
+    }
+    .role-matrix-card:hover {
+      border-color: var(--gold-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+    .role-matrix-card.claimed {
+      border-color: var(--gold-dark);
+      background: rgba(35, 28, 22, 0.75);
+    }
+    .role-matrix-card.unclaimed {
+      opacity: 0.75;
+      border-style: dashed;
+    }
+    /* Soundboard */
+    .soundboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .sound-cue-btn {
+      background: rgba(35, 20, 22, 0.8);
+      border: 1px solid var(--crimson);
+      border-radius: 8px;
+      padding: 1.2rem 1rem;
+      color: #fff;
+      cursor: pointer;
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .sound-cue-btn:hover {
+      background: var(--crimson);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(185, 28, 28, 0.4);
+    }
+    /* Modal PIN */
+    .pin-modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .pin-box {
+      background: var(--bg-card);
+      border: 2px solid var(--gold-dark);
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- PIN Protection Modal -->
+  <div class="pin-modal-backdrop" id="pin-modal">
+    <div class="pin-box">
+      <div style="font-size: 2rem; color: var(--gold-accent); margin-bottom: 0.8rem;">⚜</div>
+      <h2 style="font-family: var(--font-title); color: #fff; margin-bottom: 0.5rem;">Host Verification</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Enter your Host PIN to access the game master command center.<br>
+        <span style="color: var(--gold-glow); font-size: 0.85rem;">(Default: <strong>1920</strong>)</span>
+      </p>
+      <form id="pin-form">
+        <input type="password" id="pin-input" class="form-input" style="text-align: center; letter-spacing: 0.3em; font-size: 1.5rem; margin-bottom: 1.2rem;" maxlength="8" placeholder="••••" autofocus required>
+        <button type="submit" class="submit-rsvp-btn" style="margin-top: 0; padding: 0.9rem;">Access Command Center</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Host Intel & Dossier Inspector Modal -->
+  <div class="pin-modal-backdrop" id="intel-modal" style="display: none; padding: 1.5rem;">
+    <div class="dossier-folder" style="max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; text-align: left; background: var(--bg-card); border: 2px solid var(--gold-dark); border-radius: 6px; box-shadow: 0 15px 50px rgba(0,0,0,0.9);">
+      <div class="dossier-tab-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.4rem; border-bottom: 1px solid var(--gold-dark); background: rgba(0,0,0,0.4);">
+        <div class="classified-stamp" style="font-family: var(--font-title); font-size: 0.8rem; letter-spacing: 0.15em; color: var(--gold-glow);">CONFIDENTIAL • HOST INTEL INSPECTOR</div>
+        <button type="button" id="btn-close-intel-modal" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1;">✕</button>
+      </div>
+      <div class="dossier-body" id="intel-modal-body" style="padding: 1.5rem;">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-container" id="admin-main" style="display: none;">
+    <!-- Top Bar -->
+    <header class="admin-header">
+      <div>
+        <div class="theme-pill">Game Master • Host View</div>
+        <h1 style="font-family: var(--font-title); font-size: 2rem; margin-top: 0.4rem; color: #fff;">
+          Party Command Center
+        </h1>
+      </div>
+      <nav class="admin-nav">
+        <a href="index.html" class="action-btn" target="_blank" title="Open Guest Invitation Page">
+          <span>✦</span> View Guest Portal
+        </a>
+        <button class="sound-toggle-btn" id="admin-sound-toggle">
+          <span id="admin-sound-icon" style="font-family: serif;">♪</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Monthly Theme Preset Switcher -->
+    <section class="rsvp-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 class="section-heading" style="margin-bottom: 0.2rem;">
+            <span>✦</span> Active Monthly Party Theme
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Select which monthly mystery party is currently active for invitations:
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.8rem; align-items: center;">
+          <select id="theme-selector" class="form-select" style="min-width: 280px;">
+            <!-- Populated by JS -->
+          </select>
+          <button id="btn-edit-party" class="action-btn" style="padding: 0.75rem 1rem;">
+            <span>❧</span> Edit Details
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Metrics Stats -->
+    <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="stat-label">Attending Guests</div>
+        <div class="stat-value" id="stat-attending">0 / 16</div>
+        <div style="font-size: 0.85rem; color: var(--gold-glow); margin-top: 0.3rem;" id="stat-capacity">Capacity: 16 guests</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Core Roles Assigned</div>
+        <div class="stat-value" id="stat-roles-assigned">0 / 4</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">Detective, Killer, Doctor, Accomplice</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Declined Regrets</div>
+        <div class="stat-value" id="stat-declined">0</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">Cannot make it</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Dietary Flags</div>
+        <div class="stat-value" id="stat-dietary-count">0</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;" id="stat-dietary-types">None reported</div>
+      </div>
+    </div>
+
+    <!-- Master Guest Roster Table -->
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+        <h3 class="section-heading" style="margin-bottom: 0;">
+          <span>✦</span> Master Guest & Role Roster (Confidential)
+        </h3>
+        <div style="display: flex; gap: 0.6rem;">
+          <button class="action-btn" id="btn-seed-demo" style="padding: 0.5rem 0.9rem; font-size: 0.8rem;">
+            <span>✦</span> Seed Sample Guests
+          </button>
+          <button class="action-btn" id="btn-clear-rsvps" style="padding: 0.5rem 0.9rem; font-size: 0.8rem; border-color: #ef4444; color: #fca5a5;">
+            <span>✕</span> Reset Roster
+          </button>
+          <button class="action-btn" id="btn-export-csv" style="padding: 0.5rem 0.9rem; font-size: 0.8rem;">
+            <span>↓</span> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="guest-table" id="roster-table">
+          <thead>
+            <tr>
+              <th>Guest Name</th>
+              <th>Status</th>
+              <th>Assigned Secret Persona</th>
+              <th>Alignment</th>
+              <th>Dietary & Cocktails</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="roster-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Role Matrix (Full View of all 16 Character Slots) -->
+    <section>
+      <h3 class="section-heading">
+        <span>⚜</span> Character Roles Matrix (8-16 Players)
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem;">
+        Green = Assigned to an RSVP'd guest. Dashed = Available in the pool for the next RSVP.
+      </p>
+      <div class="role-matrix" id="role-matrix-grid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- Party Night Game Master Soundboard -->
+    <section class="rsvp-card" style="margin-bottom: 2.5rem;">
+      <h3 class="section-heading">
+        <span>✦</span> Party Night Game Master Soundboard
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Play dramatic cues at key moments during the dinner party right from your phone or tablet:
+      </p>
+      <div class="soundboard-grid">
+        <button class="sound-cue-btn" id="cue-clock">
+          <span style="font-size: 1.8rem; color: var(--gold-accent);">✦</span>
+          <span>Grandfather Clock</span>
+          <span style="font-size: 0.75rem; color: var(--gold-glow);">Arrivals / 8:00 PM</span>
+        </button>
+
+        <button class="sound-cue-btn" id="cue-seal">
+          <span style="font-size: 1.8rem; color: var(--gold-accent);">❧</span>
+          <span>Wax Seal Break</span>
+          <span style="font-size: 0.75rem; color: var(--gold-glow);">Opening Secret Letters</span>
+        </button>
+
+        <button class="sound-cue-btn" id="cue-stamp">
+          <span style="font-size: 1.8rem; color: var(--gold-accent);">⚜</span>
+          <span>Confidential Stamp</span>
+          <span style="font-size: 0.75rem; color: var(--gold-glow);">Issuing Warrants</span>
+        </button>
+
+        <button class="sound-cue-btn" id="cue-chime" style="border-color: #f87171; background: #3b1114;">
+          <span style="font-size: 1.8rem; color: #fca5a5;">✧</span>
+          <span>THE MURDER STING!</span>
+          <span style="font-size: 0.75rem; color: #fca5a5;">Lights Out (9:00 PM)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3 House Clue Cards (Print & Place Around the Estate) -->
+    <section class="rsvp-card" style="margin-bottom: 2.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+        <div>
+          <h3 class="section-heading" style="margin-bottom: 0.2rem;">
+            <span>✦</span> 3 House Clue Cards (Print & Place Around the Estate)
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Place these 3 physical cards or envelopes in 3 spots around your home for guests to discover during cocktail hour:
+          </p>
+        </div>
+        <button class="action-btn" id="btn-print-house-clues" style="padding: 0.6rem 1.1rem;">
+          <span>✦</span> Print House Cards
+        </button>
+      </div>
+
+      <div class="house-clues-grid" id="admin-house-clues">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- Dietary & Catering Report -->
+    <section class="rsvp-card">
+      <h3 class="section-heading">
+        <span>❧</span> Dinner Catering & Chef's Notes
+      </h3>
+      <div id="catering-summary" style="color: #e5ded4; font-size: 1.05rem;">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
