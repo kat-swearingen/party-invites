@@ -9,6 +9,127 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IM+Fell+English:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ==========================================================================
+       ✦ SELF-CONTAINED ROYAL BLUE & GOLD LOOKUP BUTTON & IDENTITY MODAL ✦
+       ========================================================================== */
+    .btn-blue-gold-lookup {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 1.3rem !important;
+      width: 100% !important;
+      max-width: 580px !important;
+      margin: 0.6rem auto 0 !important;
+      padding: 1.35rem 2.2rem !important;
+      background: linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%) !important;
+      border: 3px solid #f6c445 !important;
+      border-radius: 8px !important;
+      color: #fff9e6 !important;
+      font-family: 'Playfair Display', Georgia, serif !important;
+      font-size: 1.25rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.14em !important;
+      text-transform: uppercase !important;
+      cursor: pointer !important;
+      box-shadow: 0 10px 35px rgba(5, 20, 41, 0.95), 0 0 28px rgba(246, 196, 69, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      position: relative !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-blue-gold-lookup:hover {
+      transform: translateY(-3px) scale(1.02) !important;
+      background: linear-gradient(135deg, #0a254d 0%, #154c8e 50%, #0c2e5b 100%) !important;
+      border-color: #ffe066 !important;
+      color: #ffffff !important;
+      box-shadow: 0 14px 45px rgba(5, 20, 41, 0.98), 0 0 38px rgba(255, 224, 102, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .btn-blue-gold-lookup .btn-icon-pen,
+    .btn-blue-gold-lookup .btn-icon-knife {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #f6c445 !important;
+      transition: transform 0.25s ease, color 0.25s ease, filter 0.25s ease !important;
+      filter: drop-shadow(0 0 8px rgba(246, 196, 69, 0.8)) !important;
+      flex-shrink: 0 !important;
+    }
+
+    .btn-blue-gold-lookup:hover .btn-icon-pen {
+      transform: rotate(-15deg) scale(1.22) !important;
+      color: #ffe066 !important;
+    }
+
+    .btn-blue-gold-lookup:hover .btn-icon-knife {
+      transform: rotate(15deg) scale(1.22) !important;
+      color: #ffe066 !important;
+    }
+
+    .btn-blue-gold-lookup .btn-text {
+      flex: 1 !important;
+      text-align: center !important;
+      font-size: 1.18rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.14em !important;
+      color: #fff9e6 !important;
+    }
+
+    /* Modal Backdrop & Dialog */
+    .pin-modal-backdrop {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      backdrop-filter: blur(6px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 999999 !important;
+      padding: 1.5rem !important;
+      box-sizing: border-box !important;
+    }
+
+    .pin-box {
+      background: #1c1510 !important;
+      border: 2px solid var(--gold-dark, #8c6d1f) !important;
+      border-radius: 8px !important;
+      padding: 2.2rem 2rem !important;
+      max-width: 460px !important;
+      width: 100% !important;
+      text-align: center !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.98) !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .role-alert-box {
+      animation: pulseAlert 2.5s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35) !important; }
+      100% { box-shadow: 0 4px 34px rgba(239, 68, 68, 0.8) !important; }
+    }
+
+    .submission-summary-box {
+      transition: border-color 0.3s ease !important;
+    }
+
+    .submission-summary-box:hover {
+      border-color: var(--gold-accent, #e5b94c) !important;
+    }
+  </style>
 </head>
 <body>
   <div class="ambient-glow"></div>
@@ -46,24 +167,32 @@
       </div>
 
       <!-- Quick Role Lookup on Calendar Landing -->
-      <div style="text-align: center; margin-top: 2.5rem; border-top: 1px dashed rgba(201, 158, 50, 0.4); padding-top: 1.8rem;">
-        <div style="font-family: var(--font-title); font-size: 0.88rem; letter-spacing: 0.14em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.8rem; font-weight: 700;">
+      <div style="text-align: center; margin-top: 2.8rem; border-top: 2px dashed rgba(201, 158, 50, 0.45); padding-top: 2rem;">
+        <div style="font-family: var(--font-title); font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.9rem; font-weight: 700;">
           ✦ Already Registered For This Gathering? ✦
         </div>
-        <button type="button" class="btn-blue-gold-lookup" id="btn-lookup-role-cal">
+        <button 
+          type="button" 
+          class="btn-blue-gold-lookup" 
+          id="btn-lookup-role-cal"
+          onclick="window.openGuestLookupModal && window.openGuestLookupModal()"
+          style="display:inline-flex; align-items:center; justify-content:center; gap:1.3rem; width:100%; max-width:580px; margin:0 auto; padding:1.35rem 2.2rem; background:linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%); border:3px solid #f6c445; border-radius:8px; color:#fff9e6; font-family:'Playfair Display', Georgia, serif; font-size:1.25rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 35px rgba(5,20,41,0.95), 0 0 28px rgba(246,196,69,0.55); box-sizing:border-box;"
+        >
           <!-- Pen Icon (Left) -->
-          <span class="btn-icon-pen" title="Pen">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <span class="btn-icon-pen" title="Fountain Pen" style="display:inline-flex; color:#f6c445;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 19l7-7 3 3-7 7-3-3z"/>
               <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
               <path d="M2 2l7.586 7.586"/>
               <circle cx="11" cy="11" r="2"/>
             </svg>
           </span>
-          <span class="btn-text">See My Role & Clues</span>
+          <span class="btn-text" style="flex:1; text-align:center; font-size:1.18rem; font-weight:800; letter-spacing:0.14em; color:#fff9e6;">
+            See My Role & Clues
+          </span>
           <!-- Knife Icon (Right) -->
-          <span class="btn-icon-knife" title="Knife">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <span class="btn-icon-knife" title="Murder Mystery Dagger" style="display:inline-flex; color:#f6c445;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
               <path d="m13 19 6-6"/>
               <path d="m16 16 5 5"/>
@@ -241,24 +370,32 @@
           </button>
 
           <!-- Already RSVP'd Lookup Button (Blue and Gold with Pen & Knife) -->
-          <div class="existing-guest-lookup" style="margin-top: 2rem; border-top: 1.5px dashed rgba(201, 158, 50, 0.45); padding-top: 1.6rem; text-align: center;">
-            <div style="font-family: var(--font-title); font-size: 0.88rem; letter-spacing: 0.14em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.8rem; font-weight: 700;">
+          <div class="existing-guest-lookup" style="margin-top: 2.4rem; border-top: 2px dashed rgba(201, 158, 50, 0.45); padding-top: 1.8rem; text-align: center;">
+            <div style="font-family: var(--font-title); font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase; color: #f6c445; margin-bottom: 0.9rem; font-weight: 700;">
               ✦ Already RSVP'd? Check Your Persona & Clues ✦
             </div>
-            <button type="button" class="btn-blue-gold-lookup" id="btn-lookup-role">
+            <button 
+              type="button" 
+              class="btn-blue-gold-lookup" 
+              id="btn-lookup-role"
+              onclick="window.openGuestLookupModal && window.openGuestLookupModal()"
+              style="display:inline-flex; align-items:center; justify-content:center; gap:1.3rem; width:100%; max-width:580px; margin:0 auto; padding:1.35rem 2.2rem; background:linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%); border:3px solid #f6c445; border-radius:8px; color:#fff9e6; font-family:'Playfair Display', Georgia, serif; font-size:1.25rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 35px rgba(5,20,41,0.95), 0 0 28px rgba(246,196,69,0.55); box-sizing:border-box;"
+            >
               <!-- Pen Icon (Left) -->
-              <span class="btn-icon-pen" title="Fountain Pen">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <span class="btn-icon-pen" title="Fountain Pen" style="display:inline-flex; color:#f6c445;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 19l7-7 3 3-7 7-3-3z"/>
                   <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
                   <path d="M2 2l7.586 7.586"/>
                   <circle cx="11" cy="11" r="2"/>
                 </svg>
               </span>
-              <span class="btn-text">See My Role & Clues</span>
+              <span class="btn-text" style="flex:1; text-align:center; font-size:1.18rem; font-weight:800; letter-spacing:0.14em; color:#fff9e6;">
+                See My Role & Clues
+              </span>
               <!-- Knife Icon (Right) -->
-              <span class="btn-icon-knife" title="Dagger / Knife">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <span class="btn-icon-knife" title="Murder Mystery Dagger" style="display:inline-flex; color:#f6c445;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
                   <path d="m13 19 6-6"/>
                   <path d="m16 16 5 5"/>
@@ -266,7 +403,7 @@
                 </svg>
               </span>
             </button>
-            <div style="font-family: var(--font-letter); font-size: 1.05rem; font-style: italic; color: #ded6c9; margin-top: 0.75rem;">
+            <div style="font-family: var(--font-letter); font-size: 1.1rem; font-style: italic; color: #ded6c9; margin-top: 0.8rem;">
               Enter your registered name to review your secret character persona and submitted preferences
             </div>
           </div>
@@ -454,5 +591,271 @@
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- ==========================================================================
+       ✦ SELF-CONTAINED GUEST IDENTITY & ROLE VERIFICATION ENGINE ✦
+       ========================================================================== -->
+  <script>
+    (function() {
+      const FIREBASE_URL = "https://kat-party-default-rtdb.firebaseio.com";
+
+      window.openGuestLookupModal = function() {
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
+          SoundEngine.playTypewriter();
+        }
+        const modal = document.getElementById('lookup-modal');
+        const input = document.getElementById('lookup-name-input');
+        const err = document.getElementById('lookup-error-msg');
+        if (modal) modal.style.display = 'flex';
+        if (err) { err.style.display = 'none'; err.textContent = ''; }
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 100);
+        }
+      };
+
+      window.closeGuestLookupModal = function() {
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playTypewriter) {
+          SoundEngine.playTypewriter();
+        }
+        const modal = document.getElementById('lookup-modal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      // Ensure click handlers are active
+      function initLookupEngine() {
+        const modal = document.getElementById('lookup-modal');
+        const closeBtn = document.getElementById('btn-close-lookup');
+        const form = document.getElementById('lookup-form');
+        const input = document.getElementById('lookup-name-input');
+        const err = document.getElementById('lookup-error-msg');
+
+        if (closeBtn) closeBtn.onclick = window.closeGuestLookupModal;
+
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) window.closeGuestLookupModal();
+          });
+        }
+
+        const btn1 = document.getElementById('btn-lookup-role');
+        const btn2 = document.getElementById('btn-lookup-role-cal');
+        if (btn1) btn1.onclick = window.openGuestLookupModal;
+        if (btn2) btn2.onclick = window.openGuestLookupModal;
+
+        if (form) {
+          form.onsubmit = async (e) => {
+            e.preventDefault();
+            const query = input ? input.value.trim() : '';
+            if (!query) return;
+
+            const submitBtn = document.getElementById('btn-submit-lookup');
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = '0.7';
+            }
+
+            try {
+              let rsvps = [];
+              try {
+                const res = await fetch(`${FIREBASE_URL}/rsvps.json`);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data) {
+                    rsvps = Array.isArray(data) ? data : Object.values(data);
+                  }
+                }
+              } catch (fe) {
+                console.warn('Firebase query notice, checking local storage', fe);
+                const local = localStorage.getItem('parlour_rsvps');
+                if (local) rsvps = JSON.parse(local);
+              }
+
+              const clean = query.toLowerCase();
+              const guest = rsvps.find(r => r && r.name && r.name.trim().toLowerCase() === clean);
+
+              if (!guest) {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `No invitation on file found under "${query}". Please check the spelling, or submit your RSVP in the form above!`;
+                  err.style.display = 'block';
+                }
+                return;
+              }
+
+              if (guest.status === 'declined') {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `Your RSVP on file was recorded as "Declined (Regrets)". If your plans have changed, please submit an attending RSVP above to claim a secret role!`;
+                  err.style.display = 'block';
+                }
+                return;
+              }
+
+              if (guest.status === 'attending' && guest.assignedRole) {
+                // Success! Close modal and reveal dossier
+                window.closeGuestLookupModal();
+
+                // Show invitation view if on calendar view
+                const calView = document.getElementById('calendar-view');
+                const invView = document.getElementById('invitation-view');
+                const backBtn = document.getElementById('btn-nav-calendar');
+                if (calView) calView.style.display = 'none';
+                if (invView) invView.style.display = 'block';
+                if (backBtn) backBtn.style.display = 'inline-flex';
+
+                localStorage.setItem('parlour_my_rsvp', guest.id);
+                const seal = document.getElementById('wax-seal');
+                if (seal) seal.classList.add('broken');
+                const prompt = document.getElementById('seal-prompt');
+                if (prompt) prompt.textContent = '✦ Welcome Back ✦';
+
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playMysteryChime) {
+                  SoundEngine.playMysteryChime();
+                }
+
+                // Render Dossier directly
+                displayDossier(guest, rsvps);
+              } else {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                if (err) {
+                  err.textContent = `An RSVP for "${guest.name}" was found, but no character role has been assigned yet. Please submit your RSVP above to receive your role!`;
+                  err.style.display = 'block';
+                }
+              }
+            } catch (error) {
+              console.error(error);
+              if (err) {
+                err.textContent = 'A connection error occurred while querying the parlour archives. Please try again.';
+                err.style.display = 'block';
+              }
+            } finally {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+              }
+            }
+          };
+        }
+      }
+
+      function displayDossier(rsvp, allRsvps) {
+        const role = rsvp.assignedRole;
+        if (!role) return;
+
+        const dossierSection = document.getElementById('dossier-section');
+        if (dossierSection) dossierSection.style.display = 'block';
+
+        const refCode = document.getElementById('dossier-ref-code');
+        const sym = document.getElementById('dossier-symbol');
+        const arch = document.getElementById('dossier-archetype');
+        const charName = document.getElementById('dossier-character-name');
+        const guestName = document.getElementById('dossier-guest-name');
+        const badge = document.getElementById('dossier-badge');
+        const bio = document.getElementById('dossier-bio');
+        const obj = document.getElementById('dossier-objective');
+        const costume = document.getElementById('dossier-costume');
+        const passcode = document.getElementById('dossier-passcode');
+
+        if (refCode) refCode.textContent = `PARLOUR FILE: #${(role.id || 'MM').toUpperCase()}`;
+        if (sym) sym.textContent = role.symbol || '✦';
+        if (arch) arch.textContent = role.archetype || 'Special Guest';
+        if (charName) charName.textContent = role.roleTitle || role.name;
+        if (guestName) guestName.textContent = rsvp.name;
+        if (badge) {
+          badge.textContent = role.alignment || 'Town';
+          badge.className = `alignment-badge ${role.badgeClass || 'badge-guest'}`;
+        }
+        if (bio) bio.textContent = role.bio;
+        if (obj) obj.textContent = role.secretObjective;
+        if (costume) costume.textContent = role.costumeGuide;
+        if (passcode) passcode.textContent = role.doorPasscode || "WHISPER AT DOOR: 'The shadows lengthen.'";
+
+        // What I Submitted Summary
+        const sName = document.getElementById('summary-guest-name');
+        const sDiet = document.getElementById('summary-guest-dietary');
+        const sDrink = document.getElementById('summary-guest-drink');
+        if (sName) sName.textContent = rsvp.name;
+        if (sDiet) sDiet.textContent = rsvp.dietary || 'None';
+        if (sDrink) sDrink.textContent = rsvp.drinkPreference || 'Surprise Me';
+
+        // Edit Preferences button
+        const editPrefBtn = document.getElementById('btn-edit-preferences');
+        if (editPrefBtn) {
+          editPrefBtn.onclick = () => {
+            const nInput = document.getElementById('guest-name');
+            const dInput = document.getElementById('guest-dietary');
+            const drInput = document.getElementById('guest-drink');
+            const btnYes = document.getElementById('btn-status-yes');
+            if (nInput) nInput.value = rsvp.name || '';
+            if (dInput) dInput.value = (rsvp.dietary && rsvp.dietary !== 'None') ? rsvp.dietary : '';
+            if (drInput) drInput.value = rsvp.drinkPreference || 'Themed Specialty Cocktail';
+            if (btnYes) btnYes.click();
+            const rsvpSec = document.getElementById('rsvp-section');
+            if (rsvpSec) rsvpSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          };
+        }
+
+        // Role Changed Alert Notice
+        const alertBox = document.getElementById('dossier-role-changed-alert');
+        const ackBtn = document.getElementById('btn-ack-role-change');
+        if (alertBox) {
+          if (rsvp.roleChanged) {
+            alertBox.style.display = 'block';
+            if (ackBtn) {
+              ackBtn.onclick = async () => {
+                if (typeof SoundEngine !== 'undefined' && SoundEngine.playStamp) SoundEngine.playStamp();
+                rsvp.roleChanged = false;
+                alertBox.style.display = 'none';
+                try {
+                  const targetIdx = allRsvps.findIndex(r => r && r.id === rsvp.id);
+                  if (targetIdx >= 0) {
+                    allRsvps[targetIdx].roleChanged = false;
+                    await fetch(`${FIREBASE_URL}/rsvps.json`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(allRsvps)
+                    });
+                  }
+                } catch (e) {
+                  console.warn('Error clearing roleChanged in Firebase', e);
+                }
+              };
+            }
+          } else {
+            alertBox.style.display = 'none';
+          }
+        }
+
+        // Populate 3 Clue Cards
+        const intelGrid = document.getElementById('dossier-intel-grid');
+        if (intelGrid && role.clueCards && role.clueCards.length > 0) {
+          intelGrid.innerHTML = role.clueCards.map((card, idx) => `
+            <div class="intel-card">
+              <div class="intel-card-badge">CLUE #${idx + 1}</div>
+              <div class="intel-card-label">${card.label}</div>
+              <div class="intel-card-text">${card.text}</div>
+            </div>
+          `).join('');
+        }
+
+        // Privacy shield
+        const secretBox = document.getElementById('secret-objective-box');
+        const secretOverlay = document.getElementById('secret-reveal-overlay');
+        if (secretBox) secretBox.classList.add('blurred');
+        if (secretOverlay) secretOverlay.style.display = 'flex';
+
+        setTimeout(() => {
+          if (dossierSection) dossierSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLookupEngine);
+      } else {
+        initLookupEngine();
+      }
+    })();
+  </script>
 </body>
 </html>
