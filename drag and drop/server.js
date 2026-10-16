@@ -4,7 +4,9 @@ const path = require('path');
 
 const PORT = process.env.PORT || 8000;
 const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
 const PARTY_FILE = path.join(DATA_DIR, 'party.json');
 const RSVPS_FILE = path.join(DATA_DIR, 'rsvps.json');
@@ -16,24 +18,31 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.ico': 'image/x-icon',
   '.svg': 'image/svg+xml'
 };
 
 const server = http.createServer((req, res) => {
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    return res.end();
+  }
 
   const cleanUrl = req.url.split('?')[0];
 
+  // API: Health check
   if (cleanUrl === '/api/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ status: 'ok', server: 'PartyPortal Node Engine' }));
   }
 
+  // API: Party Configuration
   if (cleanUrl === '/api/party') {
     if (req.method === 'POST') {
       let body = '';
@@ -50,11 +59,12 @@ const server = http.createServer((req, res) => {
         return res.end(fs.readFileSync(PARTY_FILE));
       } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ error: 'No party data' }));
+        return res.end(JSON.stringify({ error: 'No party data saved yet' }));
       }
     }
   }
 
+  // API: RSVPs
   if (cleanUrl === '/api/rsvps') {
     if (req.method === 'POST') {
       let body = '';
@@ -76,8 +86,12 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // Static File Serving
   let filePath = path.join(__dirname, cleanUrl === '/' ? 'index.html' : cleanUrl);
-  if (!filePath.startsWith(__dirname)) { res.writeHead(403); return res.end('Forbidden'); }
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403);
+    return res.end('Forbidden');
+  }
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
@@ -85,7 +99,8 @@ const server = http.createServer((req, res) => {
       return res.end('Not Found');
     }
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
+    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    res.writeHead(200, { 'Content-Type': contentType });
     fs.createReadStream(filePath).pipe(res);
   });
 });
