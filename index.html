@@ -417,6 +417,45 @@
         </form>
       </section>
 
+      <!-- Themed Dossier Placeholder (Visible when not yet unlocked so page never looks cut off!) -->
+      <section id="dossier-locked-preview" class="dossier-locked-preview-card" style="margin-top: 2.5rem; text-align: center; background: #1c1510; border: 2px dashed rgba(201, 158, 50, 0.45); border-radius: 8px; padding: 2.2rem 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);">
+        <div style="font-size: 1.8rem; color: #f6c445; letter-spacing: 0.25em; margin-bottom: 0.4rem;">❧ ⚜ ☙</div>
+        <h3 style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.35rem; color: #fff; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.6rem;">
+          Classified Character Dossier & Three Secret Clues
+        </h3>
+        <p style="color: #ded6c9; font-size: 1.05rem; font-style: italic; max-width: 540px; margin: 0 auto 1.4rem; line-height: 1.6;">
+          Your private persona, secret objective, and three classified clues remain sealed in the manor archives until you submit an RSVP or check your role.
+        </p>
+        <button 
+          type="button" 
+          class="btn-blue-gold-lookup" 
+          onclick="window.openGuestLookupModal && window.openGuestLookupModal()"
+          style="display:inline-flex; align-items:center; justify-content:center; gap:1.3rem; width:100%; max-width:580px; margin:0 auto; padding:1.25rem 2rem; background:linear-gradient(135deg, #051429 0%, #0e3463 50%, #071e3d 100%); border:3px solid #f6c445; border-radius:8px; color:#fff9e6; font-family:'Playfair Display', Georgia, serif; font-size:1.18rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; box-shadow:0 10px 35px rgba(5,20,41,0.95), 0 0 28px rgba(246,196,69,0.55); box-sizing:border-box;"
+        >
+          <!-- Pen Icon (Left) -->
+          <span class="btn-icon-pen" title="Fountain Pen" style="display:inline-flex; color:#f6c445;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </span>
+          <span class="btn-text" style="flex:1; text-align:center; font-size:1.15rem; font-weight:800; letter-spacing:0.14em; color:#fff9e6;">
+            Unlock My Role & 3 Clues
+          </span>
+          <!-- Knife Icon (Right) -->
+          <span class="btn-icon-knife" title="Murder Mystery Dagger" style="display:inline-flex; color:#f6c445;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+              <path d="m13 19 6-6"/>
+              <path d="m16 16 5 5"/>
+              <path d="m19 21 2-2"/>
+            </svg>
+          </span>
+        </button>
+      </section>
+
       <!-- Classified Dossier Reveal Section (Hidden until RSVP'd) -->
       <section class="dossier-wrapper" id="dossier-section" style="display: none;">
         <div class="dossier-folder" id="dossier-card">
@@ -642,7 +681,9 @@
           SoundEngine.playTypewriter();
         }
         const dossier = document.getElementById('dossier-section');
+        const lockedPreview = document.getElementById('dossier-locked-preview');
         if (dossier) dossier.style.display = 'none';
+        if (lockedPreview) lockedPreview.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
@@ -796,11 +837,38 @@
             }
           };
         }
+        // Auto-populate for returning visitor who has already RSVP'd, but keep them at the top of the invitation!
+        const savedGuestId = localStorage.getItem('parlour_my_rsvp') || localStorage.getItem('party_portal_my_rsvp_id');
+        if (savedGuestId) {
+          (async () => {
+            try {
+              let rsvps = [];
+              try {
+                const res = await fetch(`${FIREBASE_URL}/rsvps.json`);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data) rsvps = Array.isArray(data) ? data : Object.values(data);
+                }
+              } catch (fe) {
+                const local = localStorage.getItem('parlour_rsvps');
+                if (local) rsvps = JSON.parse(local);
+              }
+              const cleanSaved = savedGuestId.toLowerCase();
+              const myGuest = rsvps.find(r => r && (r.id === savedGuestId || (r.name && r.name.trim().toLowerCase() === cleanSaved)));
+              if (myGuest && myGuest.status === 'attending' && myGuest.assignedRole) {
+                displayDossier(myGuest, rsvps, false);
+              }
+            } catch (e) {}
+          })();
+        }
       }
 
-      function displayDossier(rsvp, allRsvps) {
+      function displayDossier(rsvp, allRsvps, scrollIntoView = true) {
         const role = rsvp.assignedRole;
         if (!role) return;
+
+        const lockedPreview = document.getElementById('dossier-locked-preview');
+        if (lockedPreview) lockedPreview.style.display = 'none';
 
         const dossierSection = document.getElementById('dossier-section');
         if (dossierSection) dossierSection.style.display = 'block';
@@ -904,9 +972,11 @@
         if (secretBox) secretBox.classList.add('blurred');
         if (secretOverlay) secretOverlay.style.display = 'flex';
 
-        setTimeout(() => {
-          if (dossierSection) dossierSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 200);
+        if (scrollIntoView) {
+          setTimeout(() => {
+            if (dossierSection) dossierSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 200);
+        }
       }
 
       if (document.readyState === 'loading') {
