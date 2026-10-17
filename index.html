@@ -84,14 +84,18 @@
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      background: rgba(0, 0, 0, 0.9) !important;
-      backdrop-filter: blur(6px) !important;
-      display: flex !important;
+      background: rgba(0, 0, 0, 0.92) !important;
+      backdrop-filter: blur(8px) !important;
+      display: none !important; /* Hidden by default so the full website is seen! */
       align-items: center !important;
       justify-content: center !important;
       z-index: 999999 !important;
       padding: 1.5rem !important;
       box-sizing: border-box !important;
+    }
+
+    .pin-modal-backdrop.is-open {
+      display: flex !important;
     }
 
     .pin-box {
@@ -660,7 +664,10 @@
         const modal = document.getElementById('lookup-modal');
         const input = document.getElementById('lookup-name-input');
         const err = document.getElementById('lookup-error-msg');
-        if (modal) modal.style.display = 'flex';
+        if (modal) {
+          modal.classList.add('is-open');
+          modal.style.setProperty('display', 'flex', 'important');
+        }
         if (err) { err.style.display = 'none'; err.textContent = ''; }
         if (input) {
           input.value = '';
@@ -673,7 +680,10 @@
           SoundEngine.playTypewriter();
         }
         const modal = document.getElementById('lookup-modal');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+          modal.classList.remove('is-open');
+          modal.style.setProperty('display', 'none', 'important');
+        }
       };
 
       window.concealDossier = function() {
